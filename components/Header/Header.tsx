@@ -20,7 +20,7 @@ export default function Header() {
           </li>
           <li className={css.navigationItem}>
             {/* ПРАВИЛЬНО: Додаємо клас css.navigationLink для посилання */}
-            <Link href="/notes" className={css.navigationLink}>
+            <Link href="/notes/filter/all" className={css.navigationLink}>
               Notes
             </Link>
           </li>
