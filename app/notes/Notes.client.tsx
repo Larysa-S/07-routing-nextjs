@@ -20,7 +20,12 @@ import css from './Notes.client.module.css';
 
 const PER_PAGE = 12;
 
-export default function NotesClient() {
+// 1. Додайте цей інтерфейс перед компонентом
+interface NotesClientProps {
+  currentTag: string; // Описуємо, що компонент приймає рядок тегу
+}
+
+export default function NotesClient({ currentTag }: NotesClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -40,7 +45,8 @@ export default function NotesClient() {
     if (newPage > 1) params.set('page', newPage.toString());
     if (newSearch.trim()) params.set('search', newSearch.trim());
 
-    router.push(`/notes?${params.toString()}`);
+    // Замість /notes редіректимо на поточний фільтр тегу
+    router.push(`/notes/filter/${currentTag}?${params.toString()}`);
   };
 
   const debouncedUpdateUrl = useDebouncedCallback((value: string) => {
@@ -59,10 +65,10 @@ export default function NotesClient() {
 
   // Запит до TanStack Query
   const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ['notes', urlPage, urlSearch],
-    queryFn: () => fetchNotes({ page: urlPage, perPage: PER_PAGE, search: urlSearch }),
+    queryKey: ['notes', urlPage, urlSearch, currentTag], // <-- Додано currentTag
+    queryFn: () =>
+      fetchNotes({ page: urlPage, perPage: PER_PAGE, search: urlSearch, tag: currentTag }), // <-- Додано tag
     placeholderData: previousData => previousData,
-
     refetchOnMount: false,
   });
 

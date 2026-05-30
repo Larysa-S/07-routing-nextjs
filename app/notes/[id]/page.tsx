@@ -1,37 +1,42 @@
-import { QueryClient, HydrationBoundary, dehydrate } from '@tanstack/react-query';
+import React from 'react';
 import { fetchNoteById } from '@/lib/api';
-import NoteDetailsClient from './NoteDetails.client';
+import NotePreview from '@/components/NotePreview/NotePreview';
+import type { Note } from '@/types/note';
 
-interface Props {
+interface NotePageProps {
   params: Promise<{
     id: string;
   }>;
 }
 
-export const metadata = {
-  title: 'Note Details - NoteHub',
-};
+export default async function NotePage({ params }: NotePageProps) {
+  // 1. Очікуємо отримання id з параметрів URL (Next.js 16)
+  const resolvedParams = await params;
+  const noteId = resolvedParams.id;
 
-export default async function NoteDetailPage({ params }: Props) {
-  // Налаштовуємо staleTime, щоб дані з сервера вважалися свіжими протягом 1 хвилини
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: {
-        staleTime: 60 * 1000,
-      },
-    },
-  });
+  let note: Note | null = null;
 
-  const { id } = await params;
+  // 2. У try/catch робимо СУТО асинхронний запит до API, без створення JSX
+  try {
+    note = await fetchNoteById(noteId);
+  } catch (error) {
+    console.error('Помилка завантаження нотатки:', error);
+    note = null; // Переконуємось, що дані відсутні у разі помилки
+  }
 
-  await queryClient.prefetchQuery({
-    queryKey: ['note', id],
-    queryFn: () => fetchNoteById(id),
-  });
+  // 3. Уся JSX-розмітка будується в одному місці наприкінці функції за допомогою звичайного if/else
+  if (!note) {
+    return (
+      <main style={{ padding: '2rem', textAlign: 'center' }}>
+        <h1>404 - Note Not Found</h1>
+        <p>Sorry, the note you are looking for could not be found or loaded.</p>
+      </main>
+    );
+  }
 
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <NoteDetailsClient />
-    </HydrationBoundary>
+    <main style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
+      <NotePreview note={note} />
+    </main>
   );
 }

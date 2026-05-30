@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import React from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { deleteNote } from '@/lib/api';
 import type { Note } from '@/types/note';
@@ -14,8 +14,7 @@ export default function NoteList({ notes }: NoteListProps) {
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteNote(id),
     onSuccess: () => {
-      // ПРАВИЛЬНО: Інвалідуємо абсолютно всі ключі, які починаються з 'notes'
-      // (включаючи будь-які сторінки та пошукові запити)
+      // ПРАВИЛЬНО: Інвалідуємо всі ключі, які починаються з 'notes'
       queryClient.invalidateQueries({
         queryKey: ['notes'],
         exact: false,
@@ -36,10 +35,10 @@ export default function NoteList({ notes }: NoteListProps) {
           <div className={css.footer}>
             <span className={css.tag}>{tag}</span>
 
-            {/* ВИКОНАНО ЗА ТЗ: посилання View details перед кнопкою Delete */}
-            <Link href={`/notes/${id}`} className={css.viewDetailsLink}>
+            {}
+            <a href={`/notes/${id}`} className={css.link}>
               View details
-            </Link>
+            </a>
 
             <button
               className={css.button}
