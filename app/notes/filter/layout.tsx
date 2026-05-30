@@ -1,18 +1,19 @@
 import React from 'react';
 import css from './LayoutNotes.module.css';
 
-interface NotesLayoutProps {
+interface FilterLayoutProps {
   children: React.ReactNode;
-  sidebar: React.ReactNode; // Приймаємо паралельний слот сайдбару
-  modal: React.ReactNode; // Приймаємо паралельний слот модалки
+  sidebar: React.ReactNode; // Залишаємо тільки сайдбар, як вимагає ментор
 }
 
-export default function NotesLayout({ children, sidebar, modal }: NotesLayoutProps) {
+export default function FilterLayout({ children, sidebar }: FilterLayoutProps) {
   return (
     <div className={css.container}>
+      {/* Ліва колонка: темний сайдбар із тегами */}
       <aside className={css.sidebar}>{sidebar}</aside>
+
+      {/* Права колонка: список нотаток */}
       <main className={css.notesWrapper}>{children}</main>
-      {modal}
     </div>
   );
 }
