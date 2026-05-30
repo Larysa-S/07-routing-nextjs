@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react';
 import { QueryClient, HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import { fetchNotes } from '@/lib/api';
-import NotesClient from '../../Notes.client';
+import NotesClient from './Notes.client';
 import Loader from '@/components/Loader/Loader';
 
 interface ContentPageProps {
