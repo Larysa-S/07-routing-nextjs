@@ -6,44 +6,34 @@ import { useQuery } from '@tanstack/react-query';
 import Modal from '@/components/Modal/Modal';
 import NotePreview from '@/components/NotePreview/NotePreview';
 import { fetchNoteById } from '@/lib/api';
+// ІМПОРТУЄМО СТИЛІ ЗА ЗАВДАННЯМ:
+import css from './NotePreview.client.module.css';
 
 export default function NotePreviewClient() {
   const router = useRouter();
   const params = useParams();
-
-  // Дістаємо ID на клієнті для синхронізації кешу
   const id = params?.id as string;
 
-  // useQuery миттєво бере дані з HydrationBoundary
+  // Клієнтський useQuery миттєво підтягне дані з HydrationBoundary
   const { data: note, isLoading } = useQuery({
     queryKey: ['note', id],
     queryFn: () => fetchNoteById(id),
     enabled: !!id,
-    // ОБОВ'ЯЗКОВА ВИМОГА МЕНТОРА: явно вказуємо false
-    refetchOnMount: false,
+    refetchOnMount: false, // Обов'язково за ТЗ ментора
   });
 
-  // Функція для кнопки закриття
   const handleClose = () => {
     router.back();
   };
 
   return (
     <Modal isOpen={true} onClose={handleClose}>
-      {/* ОБОВ'ЯЗКОВА ВИМОГА МЕНТОРА: окрема кнопка закриття всередині модалки */}
+      {/* ВИПРАВЛЕНО: Окрема кнопка закриття з класом із вашого CSS-модуля */}
+      {/* Якщо в файлі інша назва класу, наприклад css.close, змініть її тут */}
       <button
         type="button"
         onClick={handleClose}
-        style={{
-          position: 'absolute',
-          top: '12px',
-          right: '12px',
-          background: 'none',
-          border: 'none',
-          fontSize: '20px',
-          cursor: 'pointer',
-          padding: '4px 8px',
-        }}
+        className={css.closeButton || css.close}
         aria-label="Close modal"
       >
         ×
